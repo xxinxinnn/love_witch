@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>视差动画效果</title>
+		<style>
+			body,
+			html {
+				width: 100%;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+			}
+
+			.scroll-container {
+				position: relative;
+				width: 1920px;
+				height: 1080px;
+			}
+
+			.scroll-page {
+				position: absolute;
+				width: 1920px;
+				height: 1080px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 48px;
+				transition: transform 1s, background-position 1s;
+				/* color: white; */
+			}
+
+			.scroll-page:nth-child(odd) {
+				background-color: #c0c0c0;
+			}
+
+			.scroll-page {
+				background-position: top center background-size: 1920px 1080px;
+			}
+
+			.scroll-page:nth-of-type(1) {
+				background-image: url('./img/bg/1.jpg');
+			}
+
+			.scroll-page:nth-of-type(2) {
+				background-image: url('./img/bg/3.jpg');
+			}
+
+			.scroll-page:nth-of-type(3) {
+				background-image: url('./img/bg/4.jpg');
+			}
+
+			.scroll-page:nth-of-type(4) {
+				background-image: url('./img/bg/4.jpg');
+			}
+
+			.scroll-page:nth-of-type(5) {
+				background-image: url('./img/bg/4.jpg');
+			}
+
+			.scroll-page:nth-of-type(6) {
+				background-image: url('./img/bg/4.jpg');
+			}
+
+			.scroll-page:nth-of-type(7) {
+				background-image: url('./img/bg/4.jpg');
+			}
+
+			.scroll-page:nth-of-type(8) {
+				background-image: url('./img/bg/3.jpg');
+			}
+
+			.scroll-page:nth-of-type(9) {
+				background-image: url('./img/bg/1.jpg');
+			}
+
+			.scroll-page:nth-of-type(10) {
+				background-image: url('./img/bg/1.jpg');
+			}
+
+			#file-input {
+				position: absolute;
+				top: 30px;
+				display: none;
+			}
+
+			.upload,
+			.download-link {
+				width: 400px;
+				height: 400px;
+				background-color: rgba(255, 255, 255, 0.4);
+				cursor: pointer;
+				overflow: hidden;
+				line-height: 400px;
+				border-radius: 30px;
+				border: 5.7px solid rgba(255, 0, 0, 0.5);
+			}
+
+			.enlarged {
+				transform: scale(1.1);
+			}
+
+			.scroll-page-inset,
+			.scroll-page-tailGraph {
+				width: 1100px;
+				height: 200px;
+				background-color: rgba(255, 255, 255, 0.63);
+				border-radius: 30px;
+			}
+
+			.scroll-page-ul-2-1-img {
+				width: 1100px;
+				position: relative;
+				top: -155px;
+			}
+
+			.scroll-page-tailGraph-img {
+				width: 950px;
+				position: relative;
+				top: 43px;
+				left: 76.7px;
+			}
+
+			#scroll-page-3 img,
+			#scroll-page-4 img,
+			#scroll-page-5 img,
+			#scroll-page-6 img,
+			#scroll-page-7 img {
+				display: block;
+				margin-left: 170px;
+				cursor: pointer;
+			}
+
+			#scroll-page-3 img:nth-child(2),
+			#scroll-page-4 img:nth-child(2),
+			#scroll-page-5 img:nth-child(2),
+			#scroll-page-6 img:nth-child(2),
+			#scroll-page-7 img:nth-child(2) {
+				margin-top: 50px;
+			}
+
+			#scroll-page-4 img:nth-child(3),
+			#scroll-page-4 img:nth-child(4),
+			#scroll-page-4 img:nth-child(5),
+			#scroll-page-4 img:nth-child(6),
+			#scroll-page-5 img:nth-child(3),
+			#scroll-page-5 img:nth-child(4),
+			#scroll-page-5 img:nth-child(5),
+			#scroll-page-5 img:nth-child(6),
+			#scroll-page-6 img:nth-child(3),
+			#scroll-page-6 img:nth-child(4),
+			#scroll-page-6 img:nth-child(5),
+			#scroll-page-6 img:nth-child(6),
+			#scroll-page-7 img:nth-child(3),
+			#scroll-page-7 img:nth-child(4),
+			#scroll-page-7 img:nth-child(5),
+			#scroll-page-7 img:nth-child(6) {
+				margin-top: 33px;
+			}
+
+			#scroll-page-3 img:nth-child(3),
+			#scroll-page-3 img:nth-child(4) {
+				margin-top: 33px;
+			}
+
+			canvas {
+				position: absolute;
+				top: -700px;
+				opacity: 0;
+			}
+
+			#original-image {
+				position: absolute;
+				top: -700px;
+				opacity: 0;
+				filter: brightness(150%);
+			}
+		</style>
+	</head>
+	<body class="loading" onload="showPage()">
+		<img id="original-image" src="" alt="Original Image">
+		<div class="scroll-container" onclick="scrollDown()">
+			<div class="scroll-page" style="transform: translateY(0px);">
+				<img id="scroll-page-1-1-img"
+					style="width: 1600px; margin-left: 70px; cursor: pointer; transition: transform 0.3s;"
+					src="./img/text/棣栭〉鏍囬.png" alt="">
+			</div>
+
+			<div class="scroll-page" style="transform: translateY(-1080px);">
+				<div class="scroll-page-inset">
+					<img class="scroll-page-ul-2-1-img" src="./img/text/2.png" alt="">
+				</div>
+			</div>
+
+			<div class="scroll-page" id="scroll-page-3" style="transform: translateY(-2160px);">
+				<div>
+					<img id="scroll-page-img-1-1" src="./img/text/question/1.1.png" alt="">
+					<img id="scroll-page-img-1-2" src="./img/text/question/1.2.png" alt="">
+					<img id="scroll-page-img-1-3" src="./img/text/question/1.3.png" alt="">
+					<img id="scroll-page-img-1-4" src="./img/text/question/1.4.png" alt="">
+					<img id="scroll-page-img-1-5" src="./img/text/question/1.5.png" alt="">
+				</div>
+			</div>
+
+			<div class="scroll-page" id="scroll-page-4" style="transform: translateY(-3240px);">
+				<div>
+					<img id="scroll-page-img-2-1" src="./img/text/question/2.1.png" alt="">
+					<img id="scroll-page-img-2-2" src="./img/text/question/2.2.png" alt="">
+					<img id="scroll-page-img-2-3" src="./img/text/question/2.3.png" alt="">
+					<img id="scroll-page-img-2-4" src="./img/text/question/2.4.png" alt="">
+					<img id="scroll-page-img-2-5" src="./img/text/question/2.5.png" alt="">
+				</div>
+			</div>
+
+			<div class="scroll-page" id="scroll-page-5" style="transform: translateY(-4320px);">
+				<div>
+					<img id="scroll-page-img-3-1" src="./img/text/question/3.1.png" alt="">
+					<img id="scroll-page-img-3-2" src="./img/text/question/3.2.png" alt="">
+					<img id="scroll-page-img-3-3" src="./img/text/question/3.3.png" alt="">
+					<img id="scroll-page-img-3-4" src="./img/text/question/3.4.png" alt="">
+					<img id="scroll-page-img-3-5" src="./img/text/question/3.5.png" alt="">
+				</div>
+			</div>
+
+			<div class="scroll-page" id="scroll-page-6" style="transform: translateY(-5400px);">
+				<div>
+					<img id="scroll-page-img-4-1" src="./img/text/question/4.1.png" alt="">
+					<img id="scroll-page-img-4-2" src="./img/text/question/4.2.png" alt="">
+					<img id="scroll-page-img-4-3" src="./img/text/question/4.3.png" alt="">
+					<img id="scroll-page-img-4-4" src="./img/text/question/4.4.png" alt="">
+					<img id="scroll-page-img-4-5" src="./img/text/question/4.5.png" alt="">
+				</div>
+			</div>
+
+			<div class="scroll-page" id="scroll-page-7" style="transform: translateY(-6480px);">
+				<div>
+					<img id="scroll-page-img-5-1" src="./img/text/question/5.1.png" alt="">
+					<img id="scroll-page-img-5-2" src="./img/text/question/5.2.png" alt="">
+					<img id="scroll-page-img-5-3" src="./img/text/question/5.3.png" alt="">
+					<img id="scroll-page-img-5-4" src="./img/text/question/5.4.png" alt="">
+					<img id="scroll-page-img-5-5" src="./img/text/question/5.5.png" alt="">
+				</div>
+			</div>
+
+			<div class="scroll-page" style="transform: translateY(-7560x);">
+				<input type="file" id="file-input">
+				<div class="upload" id="upload">
+					<img src="./img/text/8.png" style="width: 90%; margin-left: 21.7px;" alt="">
+				</div>
+
+			</div>
+
+			<div class="scroll-page" style="transform: translateY(-8640px);">
+				<a class="download-link" id="download-link" download="processed-image.png">
+					<img src="./img/text/9.png" style="width: 90%; margin-left: 21.7px;" alt="">
+				</a>
+			</div>
+
+			<div class="scroll-page" style="transform: translateY(-9720px);">
+				<div class="scroll-page-tailGraph">
+					<img class="scroll-page-tailGraph-img" src="./img/text/10.png" style="" alt="">
+				</div>
+			</div>
+			<canvas style="border: solid 3px;" id="cropped-canvas"></canvas>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script>
+			// 将jQuery转换为原生JavaScript
+			document.addEventListener('DOMContentLoaded', function() {
+				document.getElementById("scroll-page-1-1-img").addEventListener('click', function() {
+					this.classList.toggle("enlarged");
+				});
+			});
+
+			window.onload = function() {
+				scrollDown()
+			}
+
+
+			// 使用encodeURIComponent对特殊字符进行编码，避免错误的图片路径
+			const overlayImageUrl = [
+				'./img/pages/border_Img/1.png',
+				'./img/pages/border_Img/2.png',
+				'./img/pages/border_Img/3.png',
+				'./img/pages/border_Img/4.png'
+			];
+
+			let currentPage = 0;
+			let pageCount = 10;
+			let scrolling = false;
+
+
+			function showPage() {
+				document.body.classList.remove('hidden');
+			}
+
+
+			function scrollDown() {
+				if (scrolling) return;
+				scrolling = true;
+				currentPage = (currentPage + 1) % pageCount;
+				let pages = document.getElementsByClassName("scroll-page");
+				let pageHeight = window.innerHeight;
+
+				for (let i = 0; i < pageCount; i++) {
+					let translateY = (i - currentPage) * pageHeight;
+					let backgroundPositionY = -translateY / 2;
+					pages[i].style.transform = `translateY(${translateY}px)`;
+					pages[i].style.backgroundPositionY = `${backgroundPositionY}px`;
+				}
+
+				setTimeout(() => {
+					scrolling = false;
+				}, 1000);
+			}
+
+
+			let uploadButton = document.getElementById("upload");
+			let downloadButton = document.getElementById("download-link")
+
+			const fileInput = document.getElementById('file-input');
+			const originalImage = document.getElementById('original-image');
+			const croppedCanvas = document.getElementById('cropped-canvas');
+
+			const overlayImage = new Image();
+			const ctx = croppedCanvas.getContext('2d');
+
+			let img_width = 0,
+				img_height = 0;
+			let overlayImage_Url;
+
+			const can_width = croppedCanvas.width;
+			const can_height = croppedCanvas.height;
+
+			uploadButton.addEventListener('click', uploadFiles);
+
+
+
+			function uploadFiles() {
+
+				fileInput.click();
+
+			}
+
+			let imageBlob = null;
+
+			fileInput.addEventListener('change', (event) => {
+				let file = event.target.files[0];
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const img = new Image();
+					img.onload = () => {
+						// 创建一个 canvas 元素
+						const canvas = document.createElement("canvas");
+						canvas.width = img.width;
+						canvas.height = img.height;
+
+						// 在 canvas 上绘制原始图像
+						const ctx = canvas.getContext("2d");
+						ctx.filter = "blur(7px)"; // 在这里添加指定的滤镜
+						ctx.drawImage(img, 0, 0);
+
+						// 将结果保存为 Blob
+						canvas.toBlob((blob) => {
+							file = blob;
+						}, file.type);
+
+						originalImage.src = img.src;
+						imgWidth = originalImage.width;
+						imgHeight = originalImage.height;
+
+						// img.style.filter = "blur(20px)"; // 添加另一个滤镜
+
+						overlayImage.src = overlayImageUrl[generateRandomNumber()]; // 指定叠加图片的地址
+						overlayImage_Url = overlayImage.src.slice(-5);
+						cropImage(img);
+
+						overlayImage.onload = () => {
+							drawOverlay();
+						};
+					};
+					img.src = e.target.result;
+				};
+				reader.readAsDataURL(file);
+			});
+
+			function cropImage(img) {
+				const cropWidth = 600; // 裁剪后的图片宽度为700px
+				const cropHeight = 600; // 裁剪后的图片高度为700px
+
+				let cropX, cropY, width, height;
+
+				width = cropWidth;
+				height = cropHeight;
+				cropX = imgWidth * 0.3;
+				cropY = imgHeight * 0.1;
+
+				const originalCanvas = document.createElement("canvas");
+				originalCanvas.width = cropWidth;
+				originalCanvas.height = cropHeight;
+				const originalCtx = originalCanvas.getContext("2d");
+
+				const invertnum = 85
+
+				// 添加指定的滤镜
+				const filters = [
+					`blur(5px) invert(${invertnum})`,
+					`opacity(30%) hue-rotate(90deg)`,
+					`invert(60%) contrast(200%) filter: brightness(150%)`
+				]
+				
+				
+				
+				originalCtx.filter = filters[Math.floor(Math.random() * 3)];
+				originalCtx.drawImage(img, cropX, cropY, width, height, 0, 0, cropWidth, cropHeight);
+
+				// 获取canvas元素，设置宽度和高度
+				croppedCanvas.width = 1000;
+				croppedCanvas.height = 1000;
+
+				// 在canvas上绘制裁剪后的图片
+				if (overlayImage_Url == '1.png' || overlayImage_Url == '2.png') {
+					ctx.drawImage(originalCanvas, 205, 205, cropWidth, cropHeight);
+
+				} else if (overlayImage_Url == '3.png') {
+					ctx.drawImage(originalCanvas, 300, 240, cropWidth - 190, cropHeight - 50);
+				} else {
+					ctx.drawImage(originalCanvas, 270, 240, cropWidth - 150, cropHeight - 50);
+				}
+			}
+
+			function drawOverlay() {
+				// 为叠加图片创建一个新的 canvas
+				const overlayCanvas = document.createElement("canvas");
+				overlayCanvas.width = croppedCanvas.width;
+				overlayCanvas.height = croppedCanvas.height;
+				const overlayCtx = overlayCanvas.getContext("2d");
+				overlayCtx.drawImage(overlayImage, croppedCanvas.width / 2 - overlayImage.width / 2, croppedCanvas.height / 2 -
+					overlayImage.height / 2);
+
+				// 在 croppedCanvas 上绘制叠加图片
+				ctx.drawImage(overlayCanvas, 0, 0);
+			}
+
+
+			function generateRandomNumber() {
+				return Math.floor(Math.random() * overlayImageUrl.length);
+			}
+
+			// 添加下载功能
+			downloadButton.addEventListener('click', () => {
+				const link = document.createElement('a');
+				link.download = 'overlay_image.png';
+				link.href = croppedCanvas.toDataURL('image/png');
+				link.click();
+			});
+
+			function generateRandomNumber() {
+				const random_num = Math.floor(Math.random() * 4);
+				console.log(random_num)
+				return random_num;
+			}
+		</script>
+	</body>
+</html>

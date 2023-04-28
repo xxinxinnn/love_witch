@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Upload and Crop Image Demo</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<body>
+		<h1>Upload and Crop Image Demo</h1>
+		<p>Select an image to upload:</p>
+		<input type="file" id="file-input">
+		<div>
+			<h3>Original Image:</h3>
+			<img id="original-image" src="" alt="Original Image">
+		</div>
+		<div>
+			<h3>Cropped Image:</h3>
+			<canvas style="border: solid 3px;" id="cropped-canvas"></canvas>
+		</div>
+		<button id="download-button">Download</button>
+
+		<script>
+			const fileInput = document.getElementById('file-input');
+			const originalImage = document.getElementById('original-image');
+			const croppedCanvas = document.getElementById('cropped-canvas');
+			const downloadButton = document.getElementById('download-button');
+			const overlayImage = new Image();
+			const ctx = croppedCanvas.getContext('2d');
+			let img_width, img_height = 0;
+			let overlayImage_Url;
+
+			const can_width = croppedCanvas.width;
+			const can_height = croppedCanvas.height;
+
+
+			fileInput.addEventListener('change', (event) => {
+				const file = event.target.files[0];
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					console.log(e)
+					const img = new Image();
+					img.onload = () => {
+						// 创建两个 canvas 元素
+						  const originalCanvas = document.createElement("canvas");
+						  const filteredCanvas = document.createElement("canvas");
+						  // 将两个 canvas 元素的大小设置为图像的大小
+						  originalCanvas.width = filteredCanvas.width = img.width;
+						  originalCanvas.height = filteredCanvas.height = img.height;
+						  // 在原始 canvas 上绘制原始图像
+						  originalCanvas.getContext("2d").drawImage(img, 0, 0);
+						  // 在过滤器 canvas 上绘制原始图像和滤镜
+						  filteredCanvas.getContext("2d").drawImage(img, 0, 0);
+						  filteredCanvas.getContext("2d").globalCompositeOperation = "color";
+						  filteredCanvas.getContext("2d").fillRect(0, 0, img.width, img.height);
+						  // 将原始 canvas 和过滤器 canvas 合并在一起
+						  ctx.drawImage(originalCanvas, 0, 0);
+						  ctx.globalCompositeOperation = "source-in";
+						  ctx.drawImage(filteredCanvas, 0, 0);
+
+
+
+
+						originalImage.src = img.src;
+						img_width = originalImage.width;
+						img_height = originalImage.height;
+						overlayImage.src = './img/pages/border_Img/4.png'; // 指定叠加图片的地址
+						overlayImage_Url = overlayImage.src.slice(-5)
+						cropImage(img);
+
+
+						overlayImage.onload = () => {
+							drawOverlay();
+						};
+					};
+					img.src = e.target.result;
+				};
+				reader.readAsDataURL(file);
+			});
+
+			function cropImage(img) {
+				const cropWidth = 600; // 裁剪后的图片宽度为700px
+				const cropHeight = 600; // 裁剪后的图片高度为700px
+
+				let cropX, cropY, width, height;
+
+				width = cropWidth;
+				height = cropHeight;
+				cropX = img_width * 0.3;
+				cropY = img_height * 0.1;
+
+				// 获取canvas元素，设置宽度和高度
+				croppedCanvas.width = 1000;
+				croppedCanvas.height = 1000;
+				console.log(overlayImage_Url, typeof overlayImage_Url, typeof '1.png')
+				// 在canvas上绘制裁剪后的图片
+				if (overlayImage_Url == '1.png' || overlayImage_Url == '2.png') {
+					console.log(1)
+					ctx.drawImage(img, cropX, cropY, width, height, 205, 205, cropWidth, cropHeight);
+				} else if (overlayImage_Url == '3.png') {
+					console.log(2)
+					ctx.drawImage(img, cropX, cropY, width, height, 300, 240, cropWidth - 190, cropHeight - 50);
+				} else {
+					console.log(3)
+					ctx.drawImage(img, cropX, cropY, width, height, 270, 240, cropWidth - 150, cropHeight - 50);
+				}
+
+			}
+
+			function drawOverlay() {
+				ctx.drawImage(overlayImage, croppedCanvas.width / 2 - overlayImage.width / 2, croppedCanvas.height / 2 -
+					overlayImage.height / 2);
+			}
+
+			// 添加下载功能
+			downloadButton.addEventListener('click', () => {
+				const link = document.createElement('a');
+				link.download = 'overlay_image.png';
+				link.href = croppedCanvas.toDataURL('image/png');
+				link.click();
+			});
+		</script>
+	</body>
+</html>
+
+
+
+<!-- const fileInput = document.getElementById('file-input');
+			const originalImage = document.getElementById('original-image');
+			const croppedCanvas = document.getElementById('cropped-canvas');
+			const ctx = croppedCanvas.getContext('2d');
+			let img_width, img_height = 0;
+
+			fileInput.addEventListener('change', (event) => {
+				const file = event.target.files[0];
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const img = new Image();
+					img.onload = () => {
+						originalImage.src = img.src;
+						img_width = originalImage.width
+						img_height = originalImage.height
+						console.log(img_width, img_height)
+						cropImage(img);
+					};
+					img.src = e.target.result;
+				};
+				reader.readAsDataURL(file);
+			});
+
+			function cropImage(img) {
+				const cropWidth = 700; // 裁剪后的图片宽度为800px
+				const cropHeight = 700; // 裁剪后的图片高度为800px
+
+				let cropX, cropY, width, height;
+
+				width = cropWidth;
+				height = cropHeight;
+				cropX = img_width * 0.3;
+				cropY = img_height * 0.1;
+
+				// 获取canvas元素，设置宽度和高度
+				croppedCanvas.width = cropWidth;
+				croppedCanvas.height = cropHeight;
+
+				// 在canvas上绘制裁剪后的图片
+				ctx.drawImage(img, cropX, cropY, width, height, 0, 0, cropWidth, cropHeight);
+			} -->

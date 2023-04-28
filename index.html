@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像处理</title>
+</head>
+<body>
+    <h1>图像处理</h1>
+    <input type="file" id="inputImage" accept="image/*">
+    <canvas id="canvas" style="display:none;"></canvas>
+    <canvas id="resultCanvas"></canvas>
+    <script>
+		const inputImage = document.getElementById('inputImage');
+		const canvas = document.getElementById('canvas');
+		const resultCanvas = document.getElementById('resultCanvas');
+		const ctx = canvas.getContext('2d');
+		const resultCtx = resultCanvas.getContext('2d');
+		
+		const overlayImageUrl = './img/pages/border_Img/1.png'; // 请替换为实际的指定图像URL
+		
+		inputImage.addEventListener('change', async (e) => {
+		    const file = e.target.files[0];
+		    const image = new Image();
+		    const overlayImage = new Image();
+		    
+		    image.src = URL.createObjectURL(file);
+		    overlayImage.src = overlayImageUrl;
+		
+		    image.onload = async () => {
+		        canvas.width = image.width;
+		        canvas.height = image.height;
+		        resultCanvas.width = image.width;
+		        resultCanvas.height = image.height;
+				
+		        // 添加filter
+		        ctx.filter = 'blur(5px)'; // 以黑白滤镜为例
+		        ctx.drawImage(image, 0, 0);
+		
+		        // 裁剪图像
+		        const croppedImageData = ctx.getImageData(image.width * 0.2, image.height * 0.1 , 600, 600);
+		
+		        // 将裁剪后的图像绘制到结果画布上
+		        resultCtx.putImageData(croppedImageData, 190, 170);
+		
+		        // 加载叠加图像
+		        overlayImage.onload = () => {
+		            // 绘制叠加图像
+		            resultCtx.drawImage(overlayImage, 0, 0, 1000, 1000, 0, 0, 1000, 1000);
+		        };
+		    };
+		});
+
+	</script>
+</body>
+</html>
